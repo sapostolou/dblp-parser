@@ -22,8 +22,13 @@ public class Person{
 	String name;
 	Integer ID;
 	HashMap<String,Integer> conferences;
+	HashMap<String,Integer> fields;
+
 	String mostCommonConf;
 	Integer mostCommonConfCount;
+
+	String mostCommonField;
+	Integer mostCommonFieldCount;
 	HashMap<String,Integer> yearsCount;
 
 	public Person(String n, Integer id){
@@ -33,6 +38,8 @@ public class Person{
 		yearsCount = new HashMap<String,Integer>();
 		mostCommonConfCount =0;
 		mostCommonConf = null;
+		mostCommonFieldCount =0;
+		mostCommonField = null;
 	}
 
 	HashMap<String,Integer> getConf(){
@@ -52,7 +59,6 @@ public class Person{
 	}
 
 	public String getXMostCommonConferences(int X){
-		Iterator it = conferences.iterator();
 		List<Pair> XMostCommon = new ArrayList<Pair>();
 		Map<String,Integer> copy = new HashMap<String,Integer>(conferences);
 
@@ -67,10 +73,35 @@ public class Person{
 					maxKey = pair.getKey();
 				}
 			}
-			XMostCommon.put(maxKey,max);
+			Pair maxPair = new Pair(maxKey, max);
+			XMostCommon[j]=maxPair;
 			copy.remove(maxKey);
 
 		}
+		return XMostCommon;
+	}
+
+	public String getXMostCommonFields(int X){
+		List<Pair> XMostCommon = new ArrayList<Pair>();
+		Map<String,Integer> copy = new HashMap<String,Integer>(fields);
+
+		int max = 0, maxKey;
+
+		for(int j=0;j<X;j++){
+			max=0;
+
+			for(copy.Entry<String,Integer> pair : copy.entrySet()){
+				if(pair.getValue() >= max){
+					max = pair.getValue();
+					maxKey = pair.getKey();
+				}
+			}
+			Pair maxPair = new Pair(maxKey, max);
+			XMostCommon[j]=maxPair;
+			copy.remove(maxKey);
+
+		}
+		return XMostCommon;
 	}
 
 	void addConference(String n){
@@ -89,6 +120,25 @@ public class Person{
 		if (count>mostCommonConfCount){
 			mostCommonConf = n;
 			mostCommonConfCount = count;
+		}
+	}
+
+	void addField(String n){
+		// check if conference already in map
+		Integer count;
+		if(fields.containsKey(n)){
+			// if existent update value
+			count = fields.get(n) + 1;
+			fields.put(n,count);
+		}
+		else{
+			// if not existent put in map
+			fields.put(n,1);
+			count = 1;
+		}
+		if (count>mostCommonFieldCount){
+			mostCommonField = n;
+			mostCommonFieldCount = count;
 		}
 	}
 
