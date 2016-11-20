@@ -2,6 +2,22 @@ package dblpParser3;
 
 import java.util.HashMap;
 
+public class Pair{
+	private conf, freq;
+	public Pair(conf,freq){
+		this.conf = conf;
+		this.freq = freq;
+	}
+
+	public getConf(){
+		return conf;
+	}
+
+	public getFreq(){
+		return freq;
+	}
+}
+
 public class Person{
 	String name;
 	Integer ID;
@@ -33,6 +49,28 @@ public class Person{
 
 	public String getMostCommonConf(){
 		return mostCommonConf;
+	}
+
+	public String getXMostCommonConferences(int X){
+		Iterator it = conferences.iterator();
+		List<Pair> XMostCommon = new ArrayList<Pair>();
+		Map<String,Integer> copy = new HashMap<String,Integer>(conferences);
+
+		int max = 0, maxKey;
+
+		for(int j=0;j<X;j++){
+			max=0;
+
+			for(copy.Entry<String,Integer> pair : copy.entrySet()){
+				if(pair.getValue() >= max){
+					max = pair.getValue();
+					maxKey = pair.getKey();
+				}
+			}
+			XMostCommon.put(maxKey,max);
+			copy.remove(maxKey);
+
+		}
 	}
 
 	void addConference(String n){
