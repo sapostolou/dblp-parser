@@ -1,22 +1,8 @@
-package dblpParser3;
+package dblpParser;
 
 import java.util.HashMap;
-
-public class Pair{
-	private conf, freq;
-	public Pair(conf,freq){
-		this.conf = conf;
-		this.freq = freq;
-	}
-
-	public getConf(){
-		return conf;
-	}
-
-	public getFreq(){
-		return freq;
-	}
-}
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Person{
 	String name;
@@ -35,6 +21,7 @@ public class Person{
 		name = n;
 		ID = id;
 		conferences = new HashMap<String,Integer>();
+		fields = new HashMap<String,Integer>();
 		yearsCount = new HashMap<String,Integer>();
 		mostCommonConfCount =0;
 		mostCommonConf = null;
@@ -58,49 +45,75 @@ public class Person{
 		return mostCommonConf;
 	}
 
-	public String getXMostCommonConferences(int X){
-		List<Pair> XMostCommon = new ArrayList<Pair>();
-		Map<String,Integer> copy = new HashMap<String,Integer>(conferences);
+	public String getMostCommonField(){
+		return mostCommonField;
+	}
 
-		int max = 0, maxKey;
+	public ArrayList<Pair> getXMostCommonConferences(int X){
+		ArrayList<Pair> XMostCommon = new ArrayList<Pair>(X);
+		HashMap<String,Integer> mapCopy = new HashMap<String,Integer>(conferences);
 
-		for(int j=0;j<X;j++){
-			max=0;
+		int max = 0;
+		String maxKey=null;
 
-			for(copy.Entry<String,Integer> pair : copy.entrySet()){
-				if(pair.getValue() >= max){
-					max = pair.getValue();
-					maxKey = pair.getKey();
-				}
+		if(mapCopy.size()<X){
+			int ind = 0;
+			for(Map.Entry<String,Integer> pair : mapCopy.entrySet()){
+				XMostCommon.add(ind,new Pair(pair.getKey(), pair.getValue()));
+				ind +=1;
 			}
-			Pair maxPair = new Pair(maxKey, max);
-			XMostCommon[j]=maxPair;
-			copy.remove(maxKey);
-
 		}
+		else{
+			for(int j=0;j<X;j++){
+				max=0;
+
+				for(Map.Entry<String,Integer> pair : mapCopy.entrySet()){
+					if(pair.getValue() >= max){
+						max = pair.getValue();
+						maxKey = pair.getKey();
+					}
+				}
+				Pair maxPair = new Pair(maxKey, max);
+				XMostCommon.add(j,maxPair);
+				mapCopy.remove(maxKey);
+
+			}
+		}
+		
 		return XMostCommon;
 	}
 
-	public String getXMostCommonFields(int X){
-		List<Pair> XMostCommon = new ArrayList<Pair>();
-		Map<String,Integer> copy = new HashMap<String,Integer>(fields);
+	public ArrayList<Pair> getXMostCommonFields(int X){
+		ArrayList<Pair> XMostCommon = new ArrayList<Pair>(X);
+		HashMap<String,Integer> mapCopy = new HashMap<String,Integer>(fields);
 
-		int max = 0, maxKey;
+		int max = 0;
+		String maxKey=null;
 
-		for(int j=0;j<X;j++){
-			max=0;
-
-			for(copy.Entry<String,Integer> pair : copy.entrySet()){
-				if(pair.getValue() >= max){
-					max = pair.getValue();
-					maxKey = pair.getKey();
-				}
+		if(mapCopy.size()<X){
+			int ind = 0;
+			for(Map.Entry<String,Integer> pair : mapCopy.entrySet()){
+				XMostCommon.add(ind,new Pair(pair.getKey(), pair.getValue()));
+				ind +=1;
 			}
-			Pair maxPair = new Pair(maxKey, max);
-			XMostCommon[j]=maxPair;
-			copy.remove(maxKey);
-
 		}
+		else{
+			for(int j=0;j<X;j++){
+				max=0;
+
+				for(Map.Entry<String,Integer> pair : mapCopy.entrySet()){
+					if(pair.getValue() >= max){
+						max = pair.getValue();
+						maxKey = pair.getKey();
+					}
+				}
+				Pair maxPair = new Pair(maxKey, max);
+				XMostCommon.add(j,maxPair);
+				mapCopy.remove(maxKey);
+
+			}
+		}
+		
 		return XMostCommon;
 	}
 

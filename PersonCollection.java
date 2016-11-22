@@ -1,4 +1,4 @@
-package dblpParser3;
+package dblpParser;
 
 import java.util.ArrayList;
 

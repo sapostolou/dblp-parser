@@ -1,4 +1,4 @@
-package dblpParser3;
+package dblpParser;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -16,10 +16,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
-public class Parser {
+public class Parser2 {
 	public static void main(String[] args){
 		try {	
-			File inputFile = new File("dblp.xml");
+			File inputFile = new File("../test/dblp.xml");
 
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
@@ -30,9 +30,15 @@ public class Parser {
 			PrintWriter idAndConf = null;
 			PrintWriter idAndSen = null;
 			PrintWriter idAndName = null;
+			PrintWriter idAndCommonConfs = null;
+			PrintWriter idAndCommonFields = null;
+			PrintWriter idAndField = null;
 
 			try{
 				idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
+				idAndCommonConfs = new PrintWriter("idAndCommonConfs.txt","UTF-8");
+				idAndField = new PrintWriter("idAndField.txt","UTF-8");
+				idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
 				idAndSen = new PrintWriter("seniority.txt","UTF-8");
 				idAndName = new PrintWriter("idToName.txt","UTF-8");
 			} catch (Exception e){
@@ -43,10 +49,29 @@ public class Parser {
 				idAndName.println(p.getID() + "\t" + p.getName());
 				idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
 				idAndSen.println(p.getID() + "\t" + p.getAvg());
+
+				idAndCommonConfs.print(p.getID());
+                ArrayList<Pair> confs = p.getXMostCommonConferences(3);
+                for(Pair pr : confs){
+                    idAndCommonConfs.print("\t" + pr.getConf());
+                }
+				idAndCommonConfs.print("\n");
+
+				idAndField.println(p.getID() + "\t" + p.getMostCommonField());
+				
+				idAndCommonFields.print(p.getID());
+                ArrayList<Pair> fields = p.getXMostCommonFields(3);
+                for(Pair pr : fields){
+                    idAndCommonFields.print("\t" + pr.getConf());
+                }
+				idAndCommonFields.print("\n");
 			}
 			idAndConf.close();
 			idAndSen.close();
 			idAndName.close();
+            idAndField.close();
+            idAndCommonFields.close();
+            idAndCommonConfs.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -75,6 +100,7 @@ class UserHandler extends DefaultHandler {
 	String pubType, confName;
 	boolean foundInproceedings=false;
 	HashSet<String> conferences = new HashSet<String>();
+    HashMap<String,String> confToField = new HashMap<String,String>();
 
 	PrintWriter edgeListWriter;
 
@@ -88,8 +114,10 @@ class UserHandler extends DefaultHandler {
 			BufferedReader br = new BufferedReader(new FileReader("conferencesList.txt"));
 			String line;
 			while((line = br.readLine()) != null){
-				System.out.println(line);
-				conferences.add(line);
+                String[] parts = line.split(" ");
+				//System.out.println(line);
+				conferences.add(parts[0]);
+                confToField.put(parts[0],parts[1]);
 			}
 			//personList = new ArrayList<Person>();
 			/*conferences.add("kdd");
@@ -169,6 +197,7 @@ class UserHandler extends DefaultHandler {
 				p = PersonCollection.putPersonInCollection(Value);
 			}
 			p.addConference(conferenceName);
+            p.addField(confToField.get(conferenceName));
 			p.addYear(year);
 			persons.add(p.getID());
 			insidePerson=false;
@@ -177,32 +206,7 @@ class UserHandler extends DefaultHandler {
     		count = count +1;
     		System.out.print(count + "\r");
     		// number of inproceedings records is 1252573
-    		/*if ( count ==1252573 ){
-    			PrintWriter idAndConf = null;
-    			PrintWriter idAndSen = null;
-    			PrintWriter idAndName = null;
-
-    			try{
-    				idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
-    				idAndSen = new PrintWriter("seniority.txt","UTF-8");
-    				idAndName = new PrintWriter("idToName.txt","UTF-8");
-    			} catch (Exception e){
-    				e.printStackTrace();
-    			}
-
-				for (Person p : personCollection.getCollection()){
-					idAndName.println(p.getID() + "\t" + p.getName());
-					idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
-					idAndSen.println(p.getID() + "\t" + p.getAvg());
-				}
-				idAndConf.close();
-				idAndSen.close();
-				idAndName.close();
-
-	    		throw new MySAXTerminatorException();
-    		}*/
-    		//insideConf=false;
-
+    		
     		// persons is an arraylist of all ids of persons in the currently closing inproceedings record.
 
     		if (persons.isEmpty()){
