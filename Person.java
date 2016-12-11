@@ -173,13 +173,7 @@ public class Person{
 			count += 1;
 			sum += s;
 		}
-		float avg = (float)sum/count;
-		/*if(avg > 10 ){
-			return 1;
-		}
-		else{
-			return 0;
-		}*/
+		float avg = (float)sum / count;
 		return avg;
 	}
 }
