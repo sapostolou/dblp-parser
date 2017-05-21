@@ -16,6 +16,7 @@ public class Person{
 	String mostCommonField;
 	Integer mostCommonFieldCount;
 	HashMap<String,Integer> yearsCount;
+	Integer totalConfCount;
 
 	Integer oldestPublicationYear, newestPublicationYear;
 
@@ -31,6 +32,8 @@ public class Person{
 		mostCommonField = null;
 		oldestPublicationYear = null;
 		newestPublicationYear = null;
+		totalConfCount = 0;
+	}
 
 	Integer getCareerYears(){
 		return newestPublicationYear - oldestPublicationYear;
@@ -46,6 +49,10 @@ public class Person{
 
 	public String getName(){
 		return name;
+	}
+
+	public float getConfCountAvgPerActiveYear(){
+		return totalConfCount / getCareerYears();
 	}
 
 	public String getMostCommonConf(){
