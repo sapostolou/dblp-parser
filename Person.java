@@ -183,12 +183,14 @@ public class Person{
 
 		if( oldestPublicationYear == null || year < oldestPublicationYear){
 			oldestPublicationYear = year;
-	}
+		}
 
 		if( newestPublicationYear == null || year > newestPublicationYear){
 			newestPublicationYear = year;
 		}
 	}
+
+	Float getConfCountAvgPerActiveYear(){
 		int sum =0;
 		int count=0;
 		for(Integer s : yearsCount.values()){
