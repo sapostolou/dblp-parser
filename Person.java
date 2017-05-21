@@ -17,6 +17,8 @@ public class Person{
 	Integer mostCommonFieldCount;
 	HashMap<String,Integer> yearsCount;
 
+	Integer oldestPublicationYear, newestPublicationYear;
+
 	public Person(String n, Integer id){
 		name = n;
 		ID = id;
@@ -27,6 +29,11 @@ public class Person{
 		mostCommonConf = null;
 		mostCommonFieldCount =0;
 		mostCommonField = null;
+		oldestPublicationYear = null;
+		newestPublicationYear = null;
+
+	Integer getCareerYears(){
+		return newestPublicationYear - oldestPublicationYear;
 	}
 
 	HashMap<String,Integer> getConf(){
@@ -164,9 +171,17 @@ public class Person{
 			count=count+1;
 			yearsCount.put(y,count);
 		}
+
+		Integer year = Integer.parseInt(y);
+
+		if( oldestPublicationYear == null || year < oldestPublicationYear){
+			oldestPublicationYear = year;
 	}
 
-	Float getAvg(){
+		if( newestPublicationYear == null || year > newestPublicationYear){
+			newestPublicationYear = year;
+		}
+	}
 		int sum =0;
 		int count=0;
 		for(Integer s : yearsCount.values()){
