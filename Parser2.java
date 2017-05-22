@@ -17,8 +17,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 public class Parser2 {
-	public static void main(String[] args){
-		try {	
+    public static void main(String[] args){
+        try {	
 
 
             // Path to config file
@@ -28,7 +28,7 @@ public class Parser2 {
             UserHandler configHandler = new ConfigHandler();
 
             // Parse config
-			SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser configParser = factory.newSAXParser();
             configParser.parse(configFile, configHandler);
 
@@ -43,8 +43,8 @@ public class Parser2 {
 
             // Parse dblp xml
             SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(inputFile, userhandler);
-			
+            saxParser.parse(inputFile, userhandler);
+
             // Initialize output file writers
             PrintWriter idAndConf = null; // contains author id and his most common conferences
             PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
@@ -53,53 +53,53 @@ public class Parser2 {
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
             PrintWriter idAndField = null; // author id and field
 
-			try{
-				idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
-				idAndCommonConfs = new PrintWriter("idAndCommonConfs.txt","UTF-8");
-				idAndField = new PrintWriter("idAndField.txt","UTF-8");
-				idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
-				idAndSen = new PrintWriter("seniority.txt","UTF-8");
-				idAndName = new PrintWriter("idToName.txt","UTF-8");
+            try{
+                idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter("idAndCommonConfs.txt","UTF-8");
+                idAndField = new PrintWriter("idAndField.txt","UTF-8");
+                idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter("seniority.txt","UTF-8");
+                idAndName = new PrintWriter("idToName.txt","UTF-8");
             } 
             catch (Exception e){
-				e.printStackTrace();
-			}
+                e.printStackTrace();
+            }
 
             // Get the persons collection
-			PersonCollection personCollection = userhandler.getPersonCollection();
-			
-            // For every person fill up the output files
-			for (Person p : personCollection.getCollection()){
-				idAndName.println(p.getID() + "\t" + p.getName());
-				idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
-				idAndSen.println(p.getID() + "\t" + p.getAvg());
+            PersonCollection personCollection = userhandler.getPersonCollection();
 
-				idAndCommonConfs.print(p.getID());
+            // For every person fill up the output files
+            for (Person p : personCollection.getCollection()){
+                idAndName.println(p.getID() + "\t" + p.getName());
+                idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
+                idAndSen.println(p.getID() + "\t" + p.getAvg());
+
+                idAndCommonConfs.print(p.getID());
                 ArrayList<Pair> confs = p.getXMostCommonConferences(3);
                 for(Pair pr : confs){
                     idAndCommonConfs.print("\t" + pr.getConf());
                 }
-				idAndCommonConfs.print("\n");
+                idAndCommonConfs.print("\n");
 
-				idAndField.println(p.getID() + "\t" + p.getMostCommonField());
-				
-				idAndCommonFields.print(p.getID());
+                idAndField.println(p.getID() + "\t" + p.getMostCommonField());
+                
+                idAndCommonFields.print(p.getID());
                 ArrayList<Pair> fields = p.getXMostCommonFields(3);
                 for(Pair pr : fields){
                     idAndCommonFields.print("\t" + pr.getConf());
                 }
-				idAndCommonFields.print("\n");
-			}
-			idAndConf.close();
-			idAndSen.close();
-			idAndName.close();
+                idAndCommonFields.print("\n");
+            }
+            idAndConf.close();
+            idAndSen.close();
+            idAndName.close();
             idAndField.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-	}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
 }
 
 class ConfigHandler extends DefaultHandler{
@@ -138,127 +138,138 @@ class ConfigHandler extends DefaultHandler{
 }
 
 class UserHandler extends DefaultHandler {
-	int MAX_YEAR;
-	boolean insideConf = false;
-	int inproceedingsCount = 0;
-	String content;
-	String year;
-	boolean insidePerson;
-	HashMap<String,Integer> nameToID = new HashMap<String,Integer>();
-	int maxID = 0;
-	ArrayList<Integer> persons;
-	String key, elementName;
+    int MAX_YEAR;
+    boolean insideConf = false;
+    int inproceedingsCount = 0;
+    String content;
+    String year;
+    boolean insidePerson;
+    HashMap<String,Integer> nameToID = new HashMap<String,Integer>();
+    int maxID = 0;
+    ArrayList<Integer> persons;
+    String key, elementName;
  
-	PersonCollection personCollection = new PersonCollection();
-	String pubType, confName;
-	HashSet<String> conferences = new HashSet<String>();
+    PersonCollection personCollection = new PersonCollection();
+    String pubType, confName;
+    HashSet<String> conferences = new HashSet<String>();
     HashMap<String,String> confToField = new HashMap<String,String>();
 
-	PrintWriter edgeListWriter;
+    PrintWriter edgeListWriter;
 
-	//PrintWriter debug = new PrintWriter("debug.txt","UTF-8");
+    //PrintWriter debug = new PrintWriter("debug.txt","UTF-8");
 
 
-	public UserHandler(int maxYear){
-		MAX_YEAR = maxYear;
-		try{
-			//PrintWriter conferencesList = new PrintWriter("conferencesList.txt","UTF-8");
-			BufferedReader br = new BufferedReader(new FileReader("conferencesList.txt"));
-			String line;
-			while((line = br.readLine()) != null){
+    public UserHandler(int maxYear){
+        MAX_YEAR = maxYear;
+        try{
+            //PrintWriter conferencesList = new PrintWriter("conferencesList.txt","UTF-8");
+            BufferedReader br = new BufferedReader(new FileReader("conferencesList.txt"));
+            String line;
+            while((line = br.readLine()) != null){
                 String[] parts = line.split(" ");
-				//System.out.println(line);
-				conferences.add(parts[0]);
+                //System.out.println(line);
+                conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
-			}
-			
-			edgeListWriter = new PrintWriter("edgeList.txt","UTF-8");
+            }
+            
+            edgeListWriter = new PrintWriter("edgeList.txt","UTF-8");
 
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-	public PersonCollection getPersonCollection(){
-		return personCollection;
-	}
+    public PersonCollection getPersonCollection(){
+        return personCollection;
+    }
 
-	@Override
-	public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
-		elementName = eName; // looking for inproceedings
-		if (insidePerson = (elementName.equals("author") || elementName.equals("editor"))) {
-			content = "";
-			return;
-		}
+    @Override
+    public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
+        elementName = eName; // looking for inproceedings
+        if (insidePerson = (elementName.equals("author") || elementName.equals("editor"))) {
+            content = "";
+            return;
+        }
 
-		// START OF INPROCEEDINGS ELEMENT
-		if((attributes.getLength()>0) && k != null){
-			year = Integer.parseInt(attributes.getcontent("mdate").split("-")[0]);
-			String k = attributes.getcontent("key").split("/");	
-			pubType = k[0]; // conf
-			confName = k[1]; // examples: kdd, www etc
+        // START OF INPROCEEDINGS ELEMENT
+        if((attributes.getLength()>0) && k != null){
+            year = Integer.parseInt(attributes.getcontent("mdate").split("-")[0]);
+            String k = attributes.getcontent("key").split("/");	
+            pubType = k[0]; // conf
+            confName = k[1]; // examples: kdd, www etc
 
-			if( year < MAX_YEAR || !conferences.contains(confName)) { // if older than MAX_YEAR and conference not included in the specified list, continue
-				return;
-			}
+            if( year < MAX_YEAR || !conferences.contains(confName)) { // if older than MAX_YEAR and conference not included in the specified list, continue
+                return;
+            }
 
-			if(pubType.equals("conf") && elementName.equals("inproceedings")){
-				insideConf = true;
-				
-				persons = new ArrayList<Integer>();
-			}
-    	}
+            if(pubType.equals("conf") && elementName.equals("inproceedings")){
+                insideConf = true;
+                
+                persons = new ArrayList<Integer>(); // create new persons array to put the authors of the new paper
+            }
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String eName) throws SAXException {
-    	if ((eName.equals("author") || eName.equals("editor")) && insideConf){	// author or editor tag inside inproceedings tag
-			String conferenceName = confName;
-			Person p;
-			if ((p = PersonCollection.getPersonIfExists(content)) == null){
-				// person doesn't exist already in collection
-				p = PersonCollection.putPersonInCollection(content);
-			}
-			p.addConference(conferenceName);
-            p.addField(confToField.get(conferenceName));
-			p.addYear(year);
-			persons.add(p.getID());
-			insidePerson=false;
-    	}	
-    	else if (eName.equals(elementName) && insideConf){		// closing element is inproceedings
-    		inproceedingsCount = inproceedingsCount + 1;
-    		System.out.print(inproceedingsCount + "\r");
-    		
-    		// persons is an arraylist of all ids of persons in the currently closing inproceedings record.
 
-    		if (persons.isEmpty()){
-    			return;
-    		}
-			
-    		printEdges(persons);
+        // If the closing element is an author and insideConf is ON process the data
+        if (eName.equals("author") && insideConf){
 
-    		insideConf = false;
-    	}
+            // Find person from collection (content is the authors name in this case)
+            Person p = PersonCollection.getPersonIfExists(content);
+
+            // If the person doesnt exist in the Collection put him in
+            if (p == null){
+                p = PersonCollection.putPersonInCollection(content);
+            }
+            
+            // Add conference to his conferences list, add Field and year
+            p.addConference(confName);
+            p.addField(confToField.get(confName));
+            p.addYear(year);
+
+            // Add person to persons i.e. the array of people in this specific paper
+            persons.add(p.getID());
+
+            // Toggle insidePerson to stop recording the content
+            insidePerson=false;
+        }
+        // Otherwise if closing element is 
+        else if (eName.equals(elementName) && insideConf){		// closing element is inproceedings
+            inproceedingsCount = inproceedingsCount + 1;
+            System.out.print(inproceedingsCount + "\r");
+            
+            // persons is an arraylist of all ids of persons in the currently closing inproceedings record.
+
+            if (persons.isEmpty()){
+                return;
+            }
+            
+            printEdges(persons);
+
+            insideConf = false;
+        }
     }
 
     @Override
     public void characters(char ch[], int start, int length) throws SAXException {
-    	if (insidePerson)
-    		content += new String(ch, start, length);
+        if (insidePerson)
+            content += new String(ch, start, length);
     }
 
     void printEdges(ArrayList<Integer> list){
-    	for(int i=0;i<list.size();i++){
-    		for(int j=i+1;j<list.size();j++){
-    			int one = list.get(i);
-    			int two = list.get(j);
-    			if (one <= two){
-    				edgeListWriter.println(one + "\t" + two);
-    			}
-    			else{
-    				edgeListWriter.println(two + "\t" + one);
-    			}
-    		}
-    	}
+        for(int i=0;i<list.size();i++){
+            for(int j=i+1;j<list.size();j++){
+                int one = list.get(i);
+                int two = list.get(j);
+                if (one <= two){
+                    edgeListWriter.println(one + "\t" + two);
+                }
+                else{
+                    edgeListWriter.println(two + "\t" + one);
+                }
+            }
+        }
     }
 }
