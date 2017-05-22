@@ -46,7 +46,6 @@ public class Parser2 {
             saxParser.parse(inputFile, userhandler);
 
             // Initialize output file writers
-            PrintWriter idAndConf = null; // contains author id and his most common conferences
             PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
@@ -54,7 +53,6 @@ public class Parser2 {
             PrintWriter idAndField = null; // author id and field
 
             try{
-                idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
                 idAndCommonConfs = new PrintWriter("idAndCommonConfs.txt","UTF-8");
                 idAndField = new PrintWriter("idAndField.txt","UTF-8");
                 idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
@@ -71,7 +69,6 @@ public class Parser2 {
             // For every person fill up the output files
             for (Person p : personCollection.getCollection()){
                 idAndName.println(p.getID() + "\t" + p.getName());
-                idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
                 idAndSen.println(p.getID() + "\t" + p.getAvg());
 
                 idAndCommonConfs.print(p.getID());
@@ -90,7 +87,6 @@ public class Parser2 {
                 }
                 idAndCommonFields.print("\n");
             }
-            idAndConf.close();
             idAndSen.close();
             idAndName.close();
             idAndField.close();
