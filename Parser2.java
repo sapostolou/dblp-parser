@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Date;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -18,8 +19,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Parser2 {
     public static void main(String[] args){
-        try {	
-
+        try {
 
             // Path to config file
             File configFile = new File("./config.xml");
@@ -52,12 +52,16 @@ public class Parser2 {
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
             PrintWriter idAndField = null; // author id and field
 
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            Date date = new Date();
+            String currentDateTime = dateFormat.format(date);
+
             try{
-                idAndCommonConfs = new PrintWriter("idAndCommonConfs.txt","UTF-8");
-                idAndField = new PrintWriter("idAndField.txt","UTF-8");
-                idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter("seniority.txt","UTF-8");
-                idAndName = new PrintWriter("idToName.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"idAndCommonConfs.txt","UTF-8");
+                idAndField = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidAndField.txt","UTF-8");
+                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iseniority.txt","UTF-8");
+                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidToName.txt","UTF-8");
             } 
             catch (Exception e){
                 e.printStackTrace();
