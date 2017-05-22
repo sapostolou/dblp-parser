@@ -117,29 +117,6 @@ class UserHandler extends DefaultHandler {
 				conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
 			}
-			//personList = new ArrayList<Person>();
-			/*conferences.add("kdd");
-			conferences.add("icde");
-			conferences.add("www");
-			conferences.add("sigmod");
-			conferences.add("sdm");
-			conferences.add("vldb");
-			conferences.add("cikm");
-			conferences.add("icdm");
-			conferences.add("pkdd");
-			conferences.add("wsdm");
-			/////////////////////////////////// 10 conferences mark
-			conferences.add("infocom");
-			conferences.add("siggraph");
-			conferences.add("cvpr");
-			conferences.add("stoc");
-			conferences.add("focs");
-			conferences.add("chi");
-			conferences.add("mobicom");
-			conferences.add("aaai");
-			conferences.add("popl");*/
-			
-			/////////////////////////////////// 20 conferences mark
 			
 			edgeListWriter = new PrintWriter("edgeList.txt","UTF-8");
 
