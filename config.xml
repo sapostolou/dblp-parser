@@ -1,3 +1,4 @@
 <max_year>2013</max_year>
 <path_to_dblp_xml>../dblp.xml</path_to_dblp_xml>
 <number_of_sklls_per_worker>3</number_of_sklls_per_worker>
+<path_to_conferences_list>../conferencesList.txt</path_to_conferences_list>

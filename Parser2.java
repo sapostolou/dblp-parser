@@ -107,6 +107,7 @@ class ConfigHandler extends DefaultHandler{
     int MAX_YEAR;
     String datasetPath;
     int numberOfSkillsPerWorker;
+    String pathToConferencesList;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -114,6 +115,10 @@ class ConfigHandler extends DefaultHandler{
 
     String getDataPath(){
         return datasetPath;
+    }
+
+    String getConferencesListPath(){
+        return pathToConferencesList;
     }
 
     int getNumberOfSkillsPerWorker(){
@@ -139,6 +144,10 @@ class ConfigHandler extends DefaultHandler{
             numberOfSkillsPerWorker = content;
             content="";
         }
+        else if(eName.equals("path_to_conferences_list")){
+            pathToConferencesList = content;
+            content="";
+        }
     }
 
     @Override
@@ -159,17 +168,16 @@ class UserHandler extends DefaultHandler {
     String elementName;
  
     PersonCollection personCollection = new PersonCollection();
-    String pubType, confName;
+    String confName;
     HashSet<String> conferences = new HashSet<String>();
     HashMap<String,String> confToField = new HashMap<String,String>();
 
     PrintWriter edgeListWriter;
 
-    public UserHandler(int maxYear){
-        MAX_YEAR = maxYear;
+    public UserHandler(int configObject){
+        MAX_YEAR = configObject.getMAX_YEAR();
         try{
-            //PrintWriter conferencesList = new PrintWriter("conferencesList.txt","UTF-8");
-            BufferedReader br = new BufferedReader(new FileReader("conferencesList.txt"));
+            BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
             String line;
             while((line = br.readLine()) != null){
                 String[] parts = line.split(" ");
@@ -201,7 +209,7 @@ class UserHandler extends DefaultHandler {
         if((attributes.getLength()>0) && k != null){
             year = Integer.parseInt(attributes.getcontent("mdate").split("-")[0]);
             String k = attributes.getcontent("key").split("/");	
-            pubType = k[0]; // conf
+            String pubType = k[0]; // conf
             confName = k[1]; // examples: kdd, www etc
 
             if( year < MAX_YEAR || !conferences.contains(confName)) { // if older than MAX_YEAR and conference not included in the specified list, continue
