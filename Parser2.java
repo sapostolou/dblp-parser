@@ -36,7 +36,7 @@ public class Parser2 {
             // int maxYear = Integer.parseInt(args[0]);
 
             // Initialize the dbml xml handler
-            UserHandler userhandler = new UserHandler(configHandler.getMAX_YEAR());
+            UserHandler userhandler = new UserHandler(configHandler);
 
             // Path to dblp.xml
             File inputFile = new File(configHandler.getDataPath());
@@ -51,15 +51,11 @@ public class Parser2 {
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            Date date = new Date();
-            String currentDateTime = dateFormat.format(date);
-
             try{
-                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"idAndCommonConfs.txt","UTF-8");
-                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iseniority.txt","UTF-8");
-                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidToName.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idAndCommonConfs.txt","UTF-8");
+                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"seniority.txt","UTF-8");
+                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idToName.txt","UTF-8");
             } 
             catch (Exception e){
                 e.printStackTrace();
@@ -108,6 +104,7 @@ class ConfigHandler extends DefaultHandler{
     String datasetPath;
     int numberOfSkillsPerWorker;
     String pathToConferencesList;
+    String currentDateTime;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -121,8 +118,20 @@ class ConfigHandler extends DefaultHandler{
         return pathToConferencesList;
     }
 
+    String getCurrentDateTime(){
+        return currentDateTime;
+    }
+
     int getNumberOfSkillsPerWorker(){
         return numberOfSkillsPerWorker;
+    }
+
+    void ConfigHandler(){
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        Date date = new Date();
+        currentDateTime = dateFormat.format(date);
+
     }
 
     @Override
@@ -169,24 +178,25 @@ class UserHandler extends DefaultHandler {
  
     PersonCollection personCollection = new PersonCollection();
     String confName;
-    HashSet<String> conferences = new HashSet<String>();
-    HashMap<String,String> confToField = new HashMap<String,String>();
+    HashSet<String> conferences = new HashSet<String>(); // a set containing all the required conferences
+    HashMap<String,String> confToField = new HashMap<String,String>(); // a mapping of conferences to their respected fields
 
     PrintWriter edgeListWriter;
 
-    public UserHandler(int configObject){
+    public UserHandler(int configObject, String currentDateTime){
         MAX_YEAR = configObject.getMAX_YEAR();
         try{
             BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
+
             String line;
             while((line = br.readLine()) != null){
                 String[] parts = line.split(" ");
-                //System.out.println(line);
+                
                 conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
             }
             
-            edgeListWriter = new PrintWriter("edgeList.txt","UTF-8");
+            edgeListWriter = new PrintWriter("./"+configObject.getMAX_YEAR()+"/"+currentDateTime+"edgeList.txt","UTF-8");
 
         }catch (Exception e){
             e.printStackTrace();
