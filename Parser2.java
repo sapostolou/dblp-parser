@@ -19,21 +19,39 @@ import org.xml.sax.helpers.DefaultHandler;
 public class Parser2 {
 	public static void main(String[] args){
 		try {	
-			File inputFile = new File("../test/dblp.xml");
 
+
+            // Path to config file
+            File configFile = new File("./config.xml");
+
+            // Initialize the config handler
+            UserHandler configHandler = new ConfigHandler();
+
+            // Parse config
 			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
+            SAXParser configParser = factory.newSAXParser();
+            configParser.parse(configFile, configHandler);
 
-            int maxYear = Integer.parseInt(args[0]);
-			UserHandler userhandler = new UserHandler(maxYear);
+            // // Get MAX_YEAR from command line
+            // int maxYear = Integer.parseInt(args[0]);
+
+            // Initialize the dbml xml handler
+            UserHandler userhandler = new UserHandler(configHandler.getMAX_YEAR());
+
+            // Path to dblp.xml
+            File inputFile = new File(configHandler.getDataPath());
+
+            // Parse dblp xml
+            SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(inputFile, userhandler);
 			
-			PrintWriter idAndConf = null;
-			PrintWriter idAndSen = null;
-			PrintWriter idAndName = null;
-			PrintWriter idAndCommonConfs = null;
-			PrintWriter idAndCommonFields = null;
-			PrintWriter idAndField = null;
+            // Initialize output file writers
+            PrintWriter idAndConf = null; // contains author id and his most common conferences
+            PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
+            PrintWriter idAndName = null; // author id and name
+            PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
+            PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
+            PrintWriter idAndField = null; // author id and field
 
 			try{
 				idAndConf = new PrintWriter("idAndConf.txt","UTF-8");
@@ -42,12 +60,15 @@ public class Parser2 {
 				idAndCommonFields = new PrintWriter("idAndCommonFields.txt","UTF-8");
 				idAndSen = new PrintWriter("seniority.txt","UTF-8");
 				idAndName = new PrintWriter("idToName.txt","UTF-8");
-			} catch (Exception e){
+            } 
+            catch (Exception e){
 				e.printStackTrace();
 			}
 
+            // Get the persons collection
 			PersonCollection personCollection = userhandler.getPersonCollection();
 			
+            // For every person fill up the output files
 			for (Person p : personCollection.getCollection()){
 				idAndName.println(p.getID() + "\t" + p.getName());
 				idAndConf.println(p.getID() + "\t" + p.getMostCommonConf());
@@ -81,6 +102,40 @@ public class Parser2 {
 	}
 }
 
+class ConfigHandler extends DefaultHandler{
+    int MAX_YEAR;
+    String datasetPath;
+
+    int getMAX_YEAR(){
+        return MAX_YEAR;
+    }
+
+    String getDataPath(){
+        return datasetPath;
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
+        content="";
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String eName) throws SAXException {
+        if(eName.equals("max_year")){
+            MAX_YEAR = content;
+            content="";
+        }
+        else if(eName.equals("path_to_dblp_xml")){
+            datasetPath = content;
+            content="";
+        }
+    }
+
+    @Override
+    public void characters(char ch[], int start, int length) throws SAXException {
+        content += new String(ch, start, length);
+    }
+}
 
 class UserHandler extends DefaultHandler {
 	int MAX_YEAR;
