@@ -156,7 +156,7 @@ class UserHandler extends DefaultHandler {
     boolean insidePerson;
     int maxID = 0;
     ArrayList<Integer> persons;
-    String key, elementName;
+    String elementName;
  
     PersonCollection personCollection = new PersonCollection();
     String pubType, confName;
