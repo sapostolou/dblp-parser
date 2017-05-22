@@ -70,18 +70,20 @@ public class Parser2 {
 
             // For every person fill up the output files
             for (Person p : personCollection.getCollection()){
+
                 idAndName.println(p.getID() + "\t" + p.getName());
+
                 idAndSen.println(p.getID() + "\t" + p.getAvg());
 
                 idAndCommonConfs.print(p.getID());
-                ArrayList<Pair> confs = p.getXMostCommonConferences(3);
+                ArrayList<Pair> confs = p.getXMostCommonConferences(configHandler.getNumberOfSkillsPerWorker());
                 for(Pair pr : confs){
                     idAndCommonConfs.print("\t" + pr.getConf());
                 }
                 idAndCommonConfs.print("\n");
                 
                 idAndCommonFields.print(p.getID());
-                ArrayList<Pair> fields = p.getXMostCommonFields(3);
+                ArrayList<Pair> fields = p.getXMostCommonFields(configHandler.getNumberOfSkillsPerWorker());
                 for(Pair pr : fields){
                     idAndCommonFields.print("\t" + pr.getConf());
                 }
@@ -100,6 +102,7 @@ public class Parser2 {
 class ConfigHandler extends DefaultHandler{
     int MAX_YEAR;
     String datasetPath;
+    int numberOfSkillsPerWorker;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -107,6 +110,10 @@ class ConfigHandler extends DefaultHandler{
 
     String getDataPath(){
         return datasetPath;
+    }
+
+    int getNumberOfSkillsPerWorker(){
+        return numberOfSkillsPerWorker;
     }
 
     @Override
@@ -122,6 +129,10 @@ class ConfigHandler extends DefaultHandler{
         }
         else if(eName.equals("path_to_dblp_xml")){
             datasetPath = content;
+            content="";
+        }
+        else if(eName.equals("number_of_sklls_per_worker")){
+            numberOfSkillsPerWorker = content;
             content="";
         }
     }
