@@ -131,8 +131,7 @@ class UserHandler extends DefaultHandler {
 
 	@Override
 	public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
-		elementName = eName;
-		String k = attributes.getcontent("key");
+		elementName = eName; // looking for inproceedings
 		if (insidePerson = (elementName.equals("author") || elementName.equals("editor"))) {
 			content = "";
 			return;
@@ -141,8 +140,9 @@ class UserHandler extends DefaultHandler {
 		// START OF INPROCEEDINGS ELEMENT
 		if((attributes.getLength()>0) && k != null){
 			year = Integer.parseInt(attributes.getcontent("mdate").split("-")[0]);
-			pubType = k.split("/")[0];
-			confName = k.split("/")[1];
+			String k = attributes.getcontent("key").split("/");	
+			pubType = k[0]; // conf
+			confName = k[1]; // examples: kdd, www etc
 
 			if( year < MAX_YEAR || !conferences.contains(confName)) {
 				return;
