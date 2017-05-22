@@ -96,7 +96,6 @@ class UserHandler extends DefaultHandler {
  
 	PersonCollection personCollection = new PersonCollection();
 	String pubType, confName;
-	boolean foundInproceedings=false;
 	HashSet<String> conferences = new HashSet<String>();
     HashMap<String,String> confToField = new HashMap<String,String>();
 
@@ -149,7 +148,6 @@ class UserHandler extends DefaultHandler {
 			}
 
 			if(pubType.equals("conf") && elementName.equals("inproceedings")){
-				foundInproceedings=true;
 				insideConf = true;
 				
 				persons = new ArrayList<Integer>();

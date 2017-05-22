@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Java",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "startupClass": "dblpParser.Parser2",
+            "options": [
+                "-classpath",
+                "\"${fileDirname};.\""
+            ],
+            "jdkPath": "${env:JAVA_HOME}/bin"
+        },
+        {
+            "name": "Java Console App",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "startupClass": "dblpParser.Parser2",
+            "options": [
+                "-Xmx4G",
+                "-DentityExpansionLimit=10000000",
+                "2016"
+            ],
+            "externalConsole": true,
+            "jdkPath": "${env:JAVA_HOME}/bin"
+        }
+    ]
+}
