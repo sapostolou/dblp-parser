@@ -50,7 +50,6 @@ public class Parser2 {
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
-            PrintWriter idAndField = null; // author id and field
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             Date date = new Date();
@@ -58,7 +57,6 @@ public class Parser2 {
 
             try{
                 idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"idAndCommonConfs.txt","UTF-8");
-                idAndField = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidAndField.txt","UTF-8");
                 idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidAndCommonFields.txt","UTF-8");
                 idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iseniority.txt","UTF-8");
                 idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+currentDateTime+"iidToName.txt","UTF-8");
@@ -81,8 +79,6 @@ public class Parser2 {
                     idAndCommonConfs.print("\t" + pr.getConf());
                 }
                 idAndCommonConfs.print("\n");
-
-                idAndField.println(p.getID() + "\t" + p.getMostCommonField());
                 
                 idAndCommonFields.print(p.getID());
                 ArrayList<Pair> fields = p.getXMostCommonFields(3);
@@ -93,7 +89,6 @@ public class Parser2 {
             }
             idAndSen.close();
             idAndName.close();
-            idAndField.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
             } catch (Exception e) {
