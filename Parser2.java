@@ -144,7 +144,7 @@ class UserHandler extends DefaultHandler {
 			pubType = k[0]; // conf
 			confName = k[1]; // examples: kdd, www etc
 
-			if( year < MAX_YEAR || !conferences.contains(confName)) {
+			if( year < MAX_YEAR || !conferences.contains(confName)) { // if older than MAX_YEAR and conference not included in the specified list, continue
 				return;
 			}
 
