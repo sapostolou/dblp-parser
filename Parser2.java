@@ -89,13 +89,17 @@ public class Parser2 {
                 }
                 idAndCommonFields.print("\n");
             }
+
+            // Close output writers
             idAndSen.close();
             idAndName.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
@@ -150,7 +154,6 @@ class UserHandler extends DefaultHandler {
     String content;
     String year;
     boolean insidePerson;
-    HashMap<String,Integer> nameToID = new HashMap<String,Integer>();
     int maxID = 0;
     ArrayList<Integer> persons;
     String key, elementName;
@@ -161,9 +164,6 @@ class UserHandler extends DefaultHandler {
     HashMap<String,String> confToField = new HashMap<String,String>();
 
     PrintWriter edgeListWriter;
-
-    //PrintWriter debug = new PrintWriter("debug.txt","UTF-8");
-
 
     public UserHandler(int maxYear){
         MAX_YEAR = maxYear;
