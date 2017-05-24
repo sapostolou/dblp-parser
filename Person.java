@@ -7,15 +7,17 @@ import java.util.Map;
 public class Person{
 	String name;
 	Integer ID;
-	HashMap<String,Integer> conferences;
-	HashMap<String,Integer> fields;
+
+	HashMap<String,Integer> conferences; // mapping of conferences to number of publications in this conferences
+	HashMap<String,Integer> fields; // mapping of fields to number of publications in this field
+	HashMap<String,Integer> yearsCount; // mapping of years to number of publications in this year
 
 	String mostCommonConf;
 	Integer mostCommonConfCount;
 
 	String mostCommonField;
 	Integer mostCommonFieldCount;
-	HashMap<String,Integer> yearsCount;
+
 	Integer totalConfCount;
 
 	Integer oldestPublicationYear, newestPublicationYear;
@@ -61,6 +63,66 @@ public class Person{
 
 	public String getMostCommonField(){
 		return mostCommonField;
+	}
+
+	public void addPublication(String confName, String fieldName, String y){
+
+		// PROCESS CONFERENCE NAME
+		// check if conference already in map
+		Integer count;
+		if(conferences.containsKey(confName)){
+			// if existent update value
+			count = conferences.get(confName) + 1;
+			conferences.put(confName,count);
+		}
+		else{
+			// if not existent put in map
+			conferences.put(confName,1);
+			count = 1;
+		}
+		if (count>mostCommonConfCount){
+			mostCommonConf = confName;
+			mostCommonConfCount = count;
+		}
+
+		// PROCESS FIELD NAME
+		// check if field already in map
+		if(fields.containsKey(fieldName)){
+			// if existent update value
+			count = fields.get(fieldName) + 1;
+			fields.put(fieldName,count);
+		}
+		else{
+			// if not existent put in map
+			fields.put(fieldName,1);
+			count = 1;
+		}
+		if (count>mostCommonFieldCount){
+			mostCommonField = fieldName;
+			mostCommonFieldCount = count;
+		}
+
+		// PROCESS YEAR
+		// Update yearsCount
+		count = yearsCount.get(y);
+		if( count == null){
+			yearsCount.put(y,1);
+		}
+		else{
+			count=count+1;
+			yearsCount.put(y,count);
+		}
+
+		Integer year = Integer.parseInt(y);
+
+		if( oldestPublicationYear == null || year < oldestPublicationYear){
+			oldestPublicationYear = year;
+		}
+
+		if( newestPublicationYear == null || year > newestPublicationYear){
+			newestPublicationYear = year;
+		}
+
 	}
 
 	public ArrayList<Pair> getXMostCommonConferences(int X){
@@ -129,65 +191,6 @@ public class Person{
 		}
 		
 		return XMostCommon;
-	}
-
-	void addConference(String n){
-		// check if conference already in map
-		Integer count;
-		if(conferences.containsKey(n)){
-			// if existent update value
-			count = conferences.get(n) + 1;
-			conferences.put(n,count);
-		}
-		else{
-			// if not existent put in map
-			conferences.put(n,1);
-			count = 1;
-		}
-		if (count>mostCommonConfCount){
-			mostCommonConf = n;
-			mostCommonConfCount = count;
-		}
-	}
-
-	void addField(String n){
-		// check if conference already in map
-		Integer count;
-		if(fields.containsKey(n)){
-			// if existent update value
-			count = fields.get(n) + 1;
-			fields.put(n,count);
-		}
-		else{
-			// if not existent put in map
-			fields.put(n,1);
-			count = 1;
-		}
-		if (count>mostCommonFieldCount){
-			mostCommonField = n;
-			mostCommonFieldCount = count;
-		}
-	}
-
-	void addYear(String y){
-		Integer count = yearsCount.get(y);
-		if( count == null){
-			yearsCount.put(y,1);
-		}
-		else{
-			count=count+1;
-			yearsCount.put(y,count);
-		}
-
-		Integer year = Integer.parseInt(y);
-
-		if( oldestPublicationYear == null || year < oldestPublicationYear){
-			oldestPublicationYear = year;
-		}
-
-		if( newestPublicationYear == null || year > newestPublicationYear){
-			newestPublicationYear = year;
-		}
 	}
 
 	Float getConfCountAvgPerActiveYear(){

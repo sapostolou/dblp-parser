@@ -225,14 +225,13 @@ class UserHandler extends DefaultHandler {
             String pubType = k[0]; // conf
             confName = k[1]; // examples: kdd, www etc
 
-            if( year < MAX_YEAR || !conferences.contains(confName)) { // if older than MAX_YEAR and conference not included in the specified list, continue
-                return;
-            }
+            // if older than MAX_YEAR and conference not included in the specified list, continue
+            if( year > MAX_YEAR && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
 
-            if(pubType.equals("conf") && elementName.equals("inproceedings")){
                 insideConf = true;
                 
-                persons = new ArrayList<Integer>(); // create new persons array to put the authors of the new paper
+                // create new persons array to put the authors of the new paper
+                persons = new ArrayList<Integer>(); 
             }
         }
     }
@@ -252,9 +251,7 @@ class UserHandler extends DefaultHandler {
             }
             
             // Add conference to his conferences list, add Field and year
-            p.addConference(confName);
-            p.addField(confToField.get(confName));
-            p.addYear(year);
+            p.addPublication(confName, confToField.get(confName), year);
 
             // Add person to persons i.e. the array of people in this specific paper
             persons.add(p.getID());
