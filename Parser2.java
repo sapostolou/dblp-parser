@@ -184,7 +184,9 @@ class UserHandler extends DefaultHandler {
     PrintWriter edgeListWriter;
 
     public UserHandler(int configObject){
+
         MAX_YEAR = configObject.getMAX_YEAR();
+
         try{
             BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
 
@@ -198,7 +200,8 @@ class UserHandler extends DefaultHandler {
             
             edgeListWriter = new PrintWriter("./"+configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime+"edgeList.txt","UTF-8");
 
-        }catch (Exception e){
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }
