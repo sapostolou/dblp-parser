@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Date;
+import java.text.Format;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,15 +23,16 @@ public class Parser2 {
         try {
 
             // Path to config file
-            File configFile = new File("./config.xml");
+            // File configFile = new File("dblpParser/config.xml");
+
 
             // Initialize the config handler
-            UserHandler configHandler = new ConfigHandler();
+            ConfigHandler configHandler = new ConfigHandler("dblpParser/config.txt");
 
             // Parse config
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser configParser = factory.newSAXParser();
-            configParser.parse(configFile, configHandler);
+            // SAXParser configParser = factory.newSAXParser();
+            // configParser.parse(configFile, configHandler);
 
             // // Get MAX_YEAR from command line
             // int maxYear = Integer.parseInt(args[0]);
@@ -52,10 +54,10 @@ public class Parser2 {
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
 
             try{
-                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idAndCommonConfs.txt","UTF-8");
-                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"seniority.txt","UTF-8");
-                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime+"idToName.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idAndCommonConfs.txt","UTF-8");
+                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/seniority.txt","UTF-8");
+                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idToName.txt","UTF-8");
             } 
             catch (Exception e){
                 e.printStackTrace();
@@ -69,7 +71,7 @@ public class Parser2 {
 
                 idAndName.println(p.getID() + "\t" + p.getName());
 
-                idAndSen.println(p.getID() + "\t" + p.getAvg());
+                idAndSen.println(p.getID() + "\t" + p.getConfCountAvgPerYear());
 
                 idAndCommonConfs.print(p.getID());
                 ArrayList<Pair> confs = p.getXMostCommonConferences(configHandler.getNumberOfSkillsPerWorker());
@@ -99,12 +101,13 @@ public class Parser2 {
     }
 }
 
-class ConfigHandler extends DefaultHandler{
+class ConfigHandler{
     int MAX_YEAR;
     String datasetPath;
     int numberOfSkillsPerWorker;
     String pathToConferencesList;
     String currentDateTime;
+    String content;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -126,43 +129,69 @@ class ConfigHandler extends DefaultHandler{
         return numberOfSkillsPerWorker;
     }
 
-    void ConfigHandler(){
+    public ConfigHandler(String pathToConfigFile){
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        Date date = new Date();
-        currentDateTime = dateFormat.format(date);
+        try{
+
+            FileReader configFile = new FileReader(pathToConfigFile);
+            BufferedReader bufRead = new BufferedReader(configFile);
+            String myLine = null;
+
+            while ( (myLine = bufRead.readLine()) != null)
+            {    
+                String[] array1 = myLine.split(":");
+                // check to make sure you have valid data
+                if(array1[0].equals("max_year")){
+                    MAX_YEAR = Integer.parseInt(array1[1]);
+                }
+                else if(array1[0].equals("path_to_dblp_xml")){
+                    datasetPath = array1[1];
+                }
+                else if(array1[0].equals("number_of_sklls_per_worker")){
+                    numberOfSkillsPerWorker = Integer.parseInt(array1[1]);
+                }
+                else if(array1[0].equals("path_to_conferences_list")){
+                    pathToConferencesList = array1[1];
+                } 
+            }
+            
+            Date date = new Date();
+            currentDateTime = date.toString();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 
-    @Override
-    public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
-        content="";
-    }
+    // @Override
+    // public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
+    //     content="";
+    // }
 
-    @Override
-    public void endElement(String uri, String localName, String eName) throws SAXException {
-        if(eName.equals("max_year")){
-            MAX_YEAR = content;
-            content="";
-        }
-        else if(eName.equals("path_to_dblp_xml")){
-            datasetPath = content;
-            content="";
-        }
-        else if(eName.equals("number_of_sklls_per_worker")){
-            numberOfSkillsPerWorker = content;
-            content="";
-        }
-        else if(eName.equals("path_to_conferences_list")){
-            pathToConferencesList = content;
-            content="";
-        }
-    }
+    // @Override
+    // public void endElement(String uri, String localName, String eName) throws SAXException {
+    //     if(eName.equals("max_year")){
+    //         MAX_YEAR = Integer.parseInt(content);
+    //         content="";
+    //     }
+    //     else if(eName.equals("path_to_dblp_xml")){
+    //         datasetPath = content;
+    //         content="";
+    //     }
+    //     else if(eName.equals("number_of_sklls_per_worker")){
+    //         numberOfSkillsPerWorker = Integer.parseInt(content);
+    //         content="";
+    //     }
+    //     else if(eName.equals("path_to_conferences_list")){
+    //         pathToConferencesList = content;
+    //         content="";
+    //     }
+    // }
 
-    @Override
-    public void characters(char ch[], int start, int length) throws SAXException {
-        content += new String(ch, start, length);
-    }
+    // @Override
+    // public void characters(char ch[], int start, int length) throws SAXException {
+    //     content += new String(ch, start, length);
+    // }
 }
 
 class UserHandler extends DefaultHandler {
@@ -170,7 +199,7 @@ class UserHandler extends DefaultHandler {
     boolean insideConf = false;
     int inproceedingsCount = 0;
     String content;
-    String year;
+    int year;
     boolean insidePerson;
     int maxID = 0;
     ArrayList<Integer> persons;
@@ -183,7 +212,7 @@ class UserHandler extends DefaultHandler {
 
     PrintWriter edgeListWriter;
 
-    public UserHandler(int configObject){
+    public UserHandler(ConfigHandler configObject){
 
         MAX_YEAR = configObject.getMAX_YEAR();
 
@@ -197,8 +226,10 @@ class UserHandler extends DefaultHandler {
                 conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
             }
-            
-            edgeListWriter = new PrintWriter("./"+configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime+"edgeList.txt","UTF-8");
+            File f = new File(configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime().replace(" ", "")+"/edgeList.txt");
+            f.mkdirs();
+            f.createNewFile();
+            edgeListWriter = new PrintWriter(f,"UTF-8");
 
         }
         catch (Exception e){
@@ -213,6 +244,7 @@ class UserHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
         elementName = eName; // looking for inproceedings
+        String k = attributes.getValue("key");	
         if (insidePerson = (elementName.equals("author") || elementName.equals("editor"))) {
             content = "";
             return;
@@ -220,10 +252,10 @@ class UserHandler extends DefaultHandler {
 
         // START OF INPROCEEDINGS ELEMENT
         if((attributes.getLength()>0) && k != null){
-            year = Integer.parseInt(attributes.getcontent("mdate").split("-")[0]);
-            String k = attributes.getcontent("key").split("/");	
-            String pubType = k[0]; // conf
-            confName = k[1]; // examples: kdd, www etc
+            year = Integer.parseInt(attributes.getValue("mdate").split("-")[0]);
+            String [] key_tokens = k.split("/");	
+            String pubType = key_tokens[0]; // conf
+            confName = key_tokens[1]; // examples: kdd, www etc
 
             // if older than MAX_YEAR and conference not included in the specified list, continue
             if( year > MAX_YEAR && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
