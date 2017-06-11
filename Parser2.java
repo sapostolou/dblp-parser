@@ -167,36 +167,6 @@ class ConfigHandler{
         }
 
     }
-
-    // @Override
-    // public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
-    //     content="";
-    // }
-
-    // @Override
-    // public void endElement(String uri, String localName, String eName) throws SAXException {
-    //     if(eName.equals("max_year")){
-    //         MAX_YEAR = Integer.parseInt(content);
-    //         content="";
-    //     }
-    //     else if(eName.equals("path_to_dblp_xml")){
-    //         datasetPath = content;
-    //         content="";
-    //     }
-    //     else if(eName.equals("number_of_sklls_per_worker")){
-    //         numberOfSkillsPerWorker = Integer.parseInt(content);
-    //         content="";
-    //     }
-    //     else if(eName.equals("path_to_conferences_list")){
-    //         pathToConferencesList = content;
-    //         content="";
-    //     }
-    // }
-
-    // @Override
-    // public void characters(char ch[], int start, int length) throws SAXException {
-    //     content += new String(ch, start, length);
-    // }
 }
 
 class UserHandler extends DefaultHandler {
