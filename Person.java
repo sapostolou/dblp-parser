@@ -10,7 +10,7 @@ public class Person{
 
 	HashMap<String,Integer> conferences; // mapping of conferences to number of publications in this conferences
 	HashMap<String,Integer> fields; // mapping of fields to number of publications in this field
-	HashMap<String,Integer> yearsCount; // mapping of years to number of publications in this year
+	HashMap<Integer,Integer> yearsCount; // mapping of years to number of publications in this year
 
 	String mostCommonConf;
 	Integer mostCommonConfCount;
@@ -27,7 +27,7 @@ public class Person{
 		ID = id;
 		conferences = new HashMap<String,Integer>();
 		fields = new HashMap<String,Integer>();
-		yearsCount = new HashMap<String,Integer>();
+		yearsCount = new HashMap<Integer,Integer>();
 		mostCommonConfCount =0;
 		mostCommonConf = null;
 		mostCommonFieldCount =0;
@@ -65,7 +65,7 @@ public class Person{
 		return mostCommonField;
 	}
 
-	public void addPublication(String confName, String fieldName, String y){
+	public void addPublication(String confName, String fieldName, Integer y){
 
 		// PROCESS CONFERENCE NAME
 		// check if conference already in map
@@ -113,14 +113,12 @@ public class Person{
 			yearsCount.put(y,count);
 		}
 
-		Integer year = Integer.parseInt(y);
-
-		if( oldestPublicationYear == null || year < oldestPublicationYear){
-			oldestPublicationYear = year;
+		if( oldestPublicationYear == null || y < oldestPublicationYear){
+			oldestPublicationYear = y;
 		}
 
-		if( newestPublicationYear == null || year > newestPublicationYear){
-			newestPublicationYear = year;
+		if( newestPublicationYear == null || y > newestPublicationYear){
+			newestPublicationYear = y;
 		}
 
 	}
@@ -193,7 +191,7 @@ public class Person{
 		return XMostCommon;
 	}
 
-	Float getConfCountAvgPerActiveYear(){
+	Float getConfCountAvgPerYear(){
 		int sum =0;
 		int count=0;
 		for(Integer s : yearsCount.values()){
