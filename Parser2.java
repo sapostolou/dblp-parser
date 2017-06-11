@@ -55,12 +55,18 @@ public class Parser2 {
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
+            PrintWriter stats = null;
+            PrintWriter hist = null;
+
+            String path = "./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime();
 
             try{
-                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idAndCommonConfs.txt","UTF-8");
-                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/seniority.txt","UTF-8");
-                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idToName.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
+                idAndCommonFields = new PrintWriter(path+"/idAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter(path+"/seniority.txt","UTF-8");
+                idAndName = new PrintWriter(path+"/idToName.txt","UTF-8");
+                stats = new PrintWriter(path+"/stats.txt","UTF-8");
+                hist = new PrintWriter(path+"/hist.csv","UTF-8");
             } 
             catch (Exception e){
                 e.printStackTrace();
@@ -91,7 +97,15 @@ public class Parser2 {
                 idAndCommonFields.print("\n");
             }
 
+            stats.println("Number of persons: "+personCollection.getCount());
+            stats.println("Conference records examined: "+userhandler.inproceedingsCount);
+            stats.println("Total edges: "+userhandler.edgesPrinted);
+            configHandler.writeConfigToNewDir();
+
+            personCollection.writeSeniorityHistogram(hist);
+
             // Close output writers
+            stats.close();
             idAndSen.close();
             idAndName.close();
             idAndCommonFields.close();
@@ -111,6 +125,7 @@ class ConfigHandler{
     String pathToConferencesList;
     String currentDateTime;
     String content;
+    String allContents;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -132,8 +147,20 @@ class ConfigHandler{
         return numberOfSkillsPerWorker;
     }
 
-    public ConfigHandler(String pathToConfigFile){
+    void writeConfigToNewDir(){
+        PrintWriter newConfig = null;
+        try{
+            newConfig = new PrintWriter("./"+MAX_YEAR+"/"+currentDateTime+"/config.txt","UTF-8");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        newConfig.print(allContents);
+        newConfig.close();
+    }
 
+    public ConfigHandler(String pathToConfigFile){
+        allContents = "";
         try{
 
             FileReader configFile = new FileReader(pathToConfigFile);
@@ -142,6 +169,7 @@ class ConfigHandler{
 
             while ( (myLine = bufRead.readLine()) != null)
             {    
+                allContents += myLine + "\n";
                 String[] array1 = myLine.split(":");
                 // check to make sure you have valid data
                 if(array1[0].equals("max_year")){
@@ -173,6 +201,7 @@ class UserHandler extends DefaultHandler {
     int MAX_YEAR;
     boolean insideConf = false;
     int inproceedingsCount = 0;
+    int edgesPrinted = 0;
     String content;
     int year;
     boolean insidePerson;
@@ -278,7 +307,8 @@ class UserHandler extends DefaultHandler {
                 return;
             }
             
-            printEdges(persons);
+            int newEdges = printEdges(persons);
+            edgesPrinted = edgesPrinted+newEdges;
 
             insideConf = false;
         }
@@ -290,18 +320,22 @@ class UserHandler extends DefaultHandler {
             content += new String(ch, start, length);
     }
 
-    void printEdges(ArrayList<Integer> list){
+    int printEdges(ArrayList<Integer> list){
+        int count = 0;
         for(int i=0;i<list.size();i++){
             for(int j=i+1;j<list.size();j++){
                 int one = list.get(i);
                 int two = list.get(j);
                 if (one <= two){
                     edgeListWriter.println(one + "\t" + two);
+                    count = count + 1;
                 }
                 else{
                     edgeListWriter.println(two + "\t" + one);
+                    count = count + 1;
                 }
             }
         }
+        return count;
     }
 }
