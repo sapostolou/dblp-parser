@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.Date;
 import java.text.Format;
 
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -54,10 +57,10 @@ public class Parser2 {
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
 
             try{
-                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idAndCommonConfs.txt","UTF-8");
-                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/seniority.txt","UTF-8");
-                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime().replace(" ", "")+"/idToName.txt","UTF-8");
+                idAndCommonConfs = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idAndCommonConfs.txt","UTF-8");
+                idAndCommonFields = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idAndCommonFields.txt","UTF-8");
+                idAndSen = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/seniority.txt","UTF-8");
+                idAndName = new PrintWriter("./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime()+"/idToName.txt","UTF-8");
             } 
             catch (Exception e){
                 e.printStackTrace();
@@ -155,8 +158,10 @@ class ConfigHandler{
                 } 
             }
             
-            Date date = new Date();
-            currentDateTime = date.toString();
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMdd-HH_mm_ss");
+            currentDateTime = now.format(format);
+
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -226,10 +231,11 @@ class UserHandler extends DefaultHandler {
                 conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
             }
-            File f = new File(configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime().replace(" ", "")+"/edgeList.txt");
-            f.mkdirs();
+            File d = new File(configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime());
+            d.mkdirs();
+            File f = new File(d,"/edgeList.txt");
             f.createNewFile();
-            edgeListWriter = new PrintWriter(f,"UTF-8");
+            edgeListWriter = new PrintWriter(f ,"UTF-8");
 
         }
         catch (Exception e){
