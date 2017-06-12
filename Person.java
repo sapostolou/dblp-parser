@@ -38,7 +38,7 @@ public class Person{
 	}
 
 	Integer getCareerYears(){
-		return newestPublicationYear - oldestPublicationYear;
+		return newestPublicationYear - oldestPublicationYear + 1;
 	}
 
 	HashMap<String,Integer> getConf(){
