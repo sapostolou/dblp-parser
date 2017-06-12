@@ -53,6 +53,7 @@ public class Parser2 {
             // Initialize output file writers
             PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndSen2 = null; // author id and seniority (numerical or nominal)
+            PrintWriter idAndSen3 = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
@@ -66,6 +67,7 @@ public class Parser2 {
                 idAndCommonFields = new PrintWriter(path+"/idAndCommonFields.txt","UTF-8");
                 idAndSen = new PrintWriter(path+"/idAndAvgConfsPerYear.txt","UTF-8");
                 idAndSen2 = new PrintWriter(path+"/idAndAvgConfsPerYearActive.txt","UTF-8");
+                idAndSen3 = new PrintWriter(path+"/idAndNominalSeniority.txt","UTF-8");
                 idAndName = new PrintWriter(path+"/idToName.txt","UTF-8");
                 stats = new PrintWriter(path+"/stats.txt","UTF-8");
                 hist = new PrintWriter(path+"/hist.csv","UTF-8");
@@ -84,6 +86,7 @@ public class Parser2 {
 
                 idAndSen.println(p.getID() + "\t" + p.getConfCountAvgPerYear());
                 idAndSen2.println(p.getID() + "\t" + p.getConfCountAvgPerActiveYear());
+                idAndSen3.println(p.getID() + "\t" + configHandler.convertNumericalToNominalSeniority(p.getConfCountAvgPerActiveYear()));
 
                 idAndCommonConfs.print(p.getID());
                 ArrayList<Pair> confs = p.getXMostCommonConferences(configHandler.getNumberOfSkillsPerWorker());
@@ -111,6 +114,7 @@ public class Parser2 {
             stats.close();
             idAndSen.close();
             idAndSen2.close();
+            idAndSen3.close();
             idAndName.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
@@ -151,6 +155,21 @@ class ConfigHandler{
 
     int getNumberOfSkillsPerWorker(){
         return numberOfSkillsPerWorker;
+    }
+
+    public String convertNumericalToNominalSeniority(float sen){
+        if(sen<=lowSeniorityUpperBound){
+            return "low";
+        }
+        else if(sen>lowSeniorityUpperBound && sen<=medSeniorityUpperBound){
+            return "med";
+        }
+        else if(sen>medSeniorityUpperBound){
+            return "high";
+        }
+        else{
+            return "na";
+        }
     }
 
     void writeConfigToNewDir(){
