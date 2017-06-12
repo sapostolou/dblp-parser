@@ -2,3 +2,5 @@ max_year:2013
 path_to_dblp_xml:dblp.xml
 number_of_sklls_per_worker:3
 path_to_conferences_list:conferencesList.txt
+seniority_low_max:1
+seniority_med_max:5
