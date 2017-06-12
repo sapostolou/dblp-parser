@@ -52,6 +52,7 @@ public class Parser2 {
 
             // Initialize output file writers
             PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
+            PrintWriter idAndSen2 = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
@@ -63,7 +64,8 @@ public class Parser2 {
             try{
                 idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
                 idAndCommonFields = new PrintWriter(path+"/idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter(path+"/seniority.txt","UTF-8");
+                idAndSen = new PrintWriter(path+"/idAndAvgConfsPerYear.txt","UTF-8");
+                idAndSen2 = new PrintWriter(path+"/idAndAvgConfsPerYearActive.txt","UTF-8");
                 idAndName = new PrintWriter(path+"/idToName.txt","UTF-8");
                 stats = new PrintWriter(path+"/stats.txt","UTF-8");
                 hist = new PrintWriter(path+"/hist.csv","UTF-8");
@@ -81,6 +83,7 @@ public class Parser2 {
                 idAndName.println(p.getID() + "\t" + p.getName());
 
                 idAndSen.println(p.getID() + "\t" + p.getConfCountAvgPerYear());
+                idAndSen2.println(p.getID() + "\t" + p.getConfCountAvgPerActiveYear());
 
                 idAndCommonConfs.print(p.getID());
                 ArrayList<Pair> confs = p.getXMostCommonConferences(configHandler.getNumberOfSkillsPerWorker());
@@ -107,6 +110,7 @@ public class Parser2 {
             // Close output writers
             stats.close();
             idAndSen.close();
+            idAndSen2.close();
             idAndName.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
