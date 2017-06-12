@@ -54,6 +54,7 @@ public class Parser2 {
             PrintWriter idAndSen = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndSen2 = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndSen3 = null; // author id and seniority (numerical or nominal)
+            PrintWriter idAndSen4 = null; // author id and seniority (numerical or nominal)
             PrintWriter idAndName = null; // author id and name
             PrintWriter idAndCommonConfs = null; // author id and most common conferences (multiple)
             PrintWriter idAndCommonFields = null; // author id and most common fields (multiple)
@@ -65,9 +66,10 @@ public class Parser2 {
             try{
                 idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
                 idAndCommonFields = new PrintWriter(path+"/idAndCommonFields.txt","UTF-8");
-                idAndSen = new PrintWriter(path+"/idAndAvgConfsPerYear.txt","UTF-8");
+                // idAndSen = new PrintWriter(path+"/idAndAvgConfsPerYear.txt","UTF-8");
                 idAndSen2 = new PrintWriter(path+"/idAndAvgConfsPerYearActive.txt","UTF-8");
-                idAndSen3 = new PrintWriter(path+"/idAndNominalSeniority.txt","UTF-8");
+                // idAndSen3 = new PrintWriter(path+"/idAndAvgConfsPerYearNominal.txt","UTF-8");
+                idAndSen4 = new PrintWriter(path+"/idAndAvgConfsPerYearActiveNominal.txt","UTF-8");
                 idAndName = new PrintWriter(path+"/idToName.txt","UTF-8");
                 stats = new PrintWriter(path+"/stats.txt","UTF-8");
                 hist = new PrintWriter(path+"/hist.csv","UTF-8");
@@ -79,14 +81,30 @@ public class Parser2 {
             // Get the persons collection
             PersonCollection personCollection = userhandler.getPersonCollection();
 
+            Integer countLow=0, countMed=0, countHigh=0; // used to count seniority of people
+
             // For every person fill up the output files
             for (Person p : personCollection.getCollection()){
 
                 idAndName.println(p.getID() + "\t" + p.getName());
 
-                idAndSen.println(p.getID() + "\t" + p.getConfCountAvgPerYear());
-                idAndSen2.println(p.getID() + "\t" + p.getConfCountAvgPerActiveYear());
-                idAndSen3.println(p.getID() + "\t" + configHandler.convertNumericalToNominalSeniority(p.getConfCountAvgPerActiveYear()));
+                // idAndSen.println(p.getID() + "\t" + p.getConfCountAvgPerYear());
+                // idAndSen3.println(p.getID() + "\t" + configHandler.convertNumericalToNominalSeniority(p.getConfCountAvgPerYear()));
+                float senNum = p.getConfCountAvgPerActiveYear();
+                idAndSen2.println(p.getID() + "\t" + senNum);
+                String senNom = configHandler.convertNumericalToNominalSeniority(senNum);
+                switch(senNom){
+                    case "low":
+                        countLow = countLow + 1;
+                        break;
+                    case "med":
+                        countMed = countMed + 1;
+                        break;
+                    case "high":
+                        countHigh = countHigh + 1;
+                        break;
+                }
+                idAndSen4.println(p.getID() + "\t" + senNom);
 
                 idAndCommonConfs.print(p.getID());
                 ArrayList<Pair> confs = p.getXMostCommonConferences(configHandler.getNumberOfSkillsPerWorker());
@@ -106,15 +124,19 @@ public class Parser2 {
             stats.println("Number of persons: "+personCollection.getCount());
             stats.println("Conference records examined: "+userhandler.inproceedingsCount);
             stats.println("Total edges: "+userhandler.edgesPrinted);
+            stats.println("Persons with low seniority (upper bound : "+configHandler.lowSeniorityUpperBound+"): "+countLow);
+            stats.println("Persons with medium seniority (upper bound : "+configHandler.medSeniorityUpperBound+"): "+countMed);
+            stats.println("Persons with high seniority: "+countHigh);
             configHandler.writeConfigToNewDir();
 
             personCollection.writeSeniorityHistogram(hist);
 
             // Close output writers
             stats.close();
-            idAndSen.close();
+            // idAndSen.close();
             idAndSen2.close();
-            idAndSen3.close();
+            // idAndSen3.close();
+            idAndSen4.close();
             idAndName.close();
             idAndCommonFields.close();
             idAndCommonConfs.close();
