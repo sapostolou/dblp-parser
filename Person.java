@@ -121,6 +121,8 @@ public class Person{
 			newestPublicationYear = y;
 		}
 
+		totalConfCount = totalConfCount + 1;
+
 	}
 
 	public ArrayList<Pair> getXMostCommonConferences(int X){
