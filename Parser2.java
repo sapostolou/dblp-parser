@@ -130,6 +130,8 @@ class ConfigHandler{
     String currentDateTime;
     String content;
     String allContents;
+    Integer lowSeniorityUpperBound;
+    Integer medSeniorityUpperBound;
 
     int getMAX_YEAR(){
         return MAX_YEAR;
@@ -176,18 +178,26 @@ class ConfigHandler{
                 allContents += myLine + "\n";
                 String[] array1 = myLine.split(":");
                 // check to make sure you have valid data
-                if(array1[0].equals("max_year")){
-                    MAX_YEAR = Integer.parseInt(array1[1]);
+                switch(array1[0]){
+                    case "max_year":
+                        MAX_YEAR = Integer.parseInt(array1[1]);
+                        break;
+                    case "path_to_dblp_xml":
+                        datasetPath = array1[1];
+                        break;
+                    case "number_of_sklls_per_worker":
+                        numberOfSkillsPerWorker = Integer.parseInt(array1[1]);
+                        break;
+                    case "path_to_conferences_list":
+                        pathToConferencesList = array1[1];
+                        break;
+                    case "seniority_low_max":
+                        lowSeniorityUpperBound = Integer.parseInt(array1[1]);
+                        break;
+                    case "seniority_med_max":
+                        medSeniorityUpperBound = Integer.parseInt(array1[1]);
+                        break;
                 }
-                else if(array1[0].equals("path_to_dblp_xml")){
-                    datasetPath = array1[1];
-                }
-                else if(array1[0].equals("number_of_sklls_per_worker")){
-                    numberOfSkillsPerWorker = Integer.parseInt(array1[1]);
-                }
-                else if(array1[0].equals("path_to_conferences_list")){
-                    pathToConferencesList = array1[1];
-                } 
             }
             
             LocalDateTime now = LocalDateTime.now();
