@@ -61,7 +61,7 @@ public class Parser2 {
             PrintWriter stats = null;
             PrintWriter hist = null;
 
-            String path = "./"+configHandler.getMAX_YEAR()+"/"+configHandler.getCurrentDateTime();
+            String path = "./"+configHandler.getMAX_DATE()+"/"+configHandler.getCurrentDateTime();
 
             try{
                 idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
@@ -149,7 +149,7 @@ public class Parser2 {
 }
 
 class ConfigHandler{
-    int MAX_YEAR;
+    int MAX_DATE;
     String datasetPath;
     int numberOfSkillsPerWorker;
     String pathToConferencesList;
@@ -159,8 +159,8 @@ class ConfigHandler{
     Integer lowSeniorityUpperBound;
     Integer medSeniorityUpperBound;
 
-    int getMAX_YEAR(){
-        return MAX_YEAR;
+    int getMAX_DATE(){
+        return MAX_DATE;
     }
 
     String getDataPath(){
@@ -197,7 +197,7 @@ class ConfigHandler{
     void writeConfigToNewDir(){
         PrintWriter newConfig = null;
         try{
-            newConfig = new PrintWriter("./"+MAX_YEAR+"/"+currentDateTime+"/config.txt","UTF-8");
+            newConfig = new PrintWriter("./"+MAX_DATE+"/"+currentDateTime+"/config.txt","UTF-8");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -220,8 +220,8 @@ class ConfigHandler{
                 String[] array1 = myLine.split(":");
                 // check to make sure you have valid data
                 switch(array1[0]){
-                    case "max_year":
-                        MAX_YEAR = Integer.parseInt(array1[1]);
+                    case "max_date":
+                        MAX_DATE = Integer.parseInt(array1[1]);
                         break;
                     case "path_to_dblp_xml":
                         datasetPath = array1[1];
@@ -253,7 +253,7 @@ class ConfigHandler{
 }
 
 class UserHandler extends DefaultHandler {
-    int MAX_YEAR;
+    int MAX_DATE;
     boolean insideConf = false;
     int inproceedingsCount = 0;
     int edgesPrinted = 0;
@@ -273,7 +273,7 @@ class UserHandler extends DefaultHandler {
 
     public UserHandler(ConfigHandler configObject){
 
-        MAX_YEAR = configObject.getMAX_YEAR();
+        MAX_DATE = configObject.getMAX_DATE();
 
         try{
             BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
@@ -285,7 +285,7 @@ class UserHandler extends DefaultHandler {
                 conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
             }
-            File d = new File(configObject.getMAX_YEAR()+"/"+configObject.getCurrentDateTime());
+            File d = new File(configObject.getMAX_DATE()+"/"+configObject.getCurrentDateTime());
             d.mkdirs();
             File f = new File(d,"/edgeList.txt");
             f.createNewFile();
@@ -305,7 +305,7 @@ class UserHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String eName, Attributes attributes) throws SAXException {
         elementName = eName; // looking for inproceedings
         String k = attributes.getValue("key");	
-        if (insidePerson = (elementName.equals("author") || elementName.equals("editor"))) {
+        if (insidePerson = (elementName.equals("author"))) {
             content = "";
             return;
         }
@@ -313,13 +313,16 @@ class UserHandler extends DefaultHandler {
         // START OF INPROCEEDINGS ELEMENT
         if((attributes.getLength()>0) && k != null){
             year = Integer.parseInt(attributes.getValue("mdate").split("-")[0]);
+            Integer dat = Integer.parseInt(attributes.getValue("mdate").replace("-", ""));
+
             String [] key_tokens = k.split("/");	
             String pubType = key_tokens[0]; // conf
             confName = key_tokens[1]; // examples: kdd, www etc
+            
 
-            // if older than MAX_YEAR and conference not included in the specified list, continue
-            if( year > MAX_YEAR && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
-
+            // if older than MAX_DATE and conference not included in the specified list, continue
+            if( dat > MAX_DATE && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
+                
                 insideConf = true;
                 
                 // create new persons array to put the authors of the new paper
@@ -354,7 +357,8 @@ class UserHandler extends DefaultHandler {
         // Otherwise if closing element is 
         else if (eName.equals(elementName) && insideConf){		// closing element is inproceedings
             inproceedingsCount = inproceedingsCount + 1;
-            System.out.print(inproceedingsCount + "\r");
+            // System.out.print(inproceedingsCount + "\r");
+            
             
             // persons is an arraylist of all ids of persons in the currently closing inproceedings record.
 
