@@ -61,7 +61,7 @@ public class Parser2 {
             PrintWriter stats = null;
             PrintWriter hist = null;
 
-            String path = "./"+configHandler.getMAX_DATE()+"/"+configHandler.getCurrentDateTime();
+            String path = "./"+configHandler.getDirName()+"/"+configHandler.getCurrentDateTime();
 
             try{
                 idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
@@ -149,7 +149,8 @@ public class Parser2 {
 }
 
 class ConfigHandler{
-    int MAX_DATE;
+    Integer fromDate;
+    Integer toDate;
     String datasetPath;
     int numberOfSkillsPerWorker;
     String pathToConferencesList;
@@ -159,8 +160,16 @@ class ConfigHandler{
     Integer lowSeniorityUpperBound;
     Integer medSeniorityUpperBound;
 
-    int getMAX_DATE(){
-        return MAX_DATE;
+    Integer getFromDate(){
+        return fromDate;
+    }
+
+    Integer getToDate(){
+        return toDate;
+    }
+
+    String getDirName(){
+        return fromDate.toString() + "-" + toDate.toString();
     }
 
     String getDataPath(){
@@ -197,7 +206,7 @@ class ConfigHandler{
     void writeConfigToNewDir(){
         PrintWriter newConfig = null;
         try{
-            newConfig = new PrintWriter("./"+MAX_DATE+"/"+currentDateTime+"/config.txt","UTF-8");
+            newConfig = new PrintWriter("./"+getDirName()+"/"+currentDateTime+"/config.txt","UTF-8");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -220,8 +229,11 @@ class ConfigHandler{
                 String[] array1 = myLine.split(":");
                 // check to make sure you have valid data
                 switch(array1[0]){
-                    case "max_date":
-                        MAX_DATE = Integer.parseInt(array1[1]);
+                    case "from_date":
+                        fromDate = Integer.parseInt(array1[1]);
+                        break;
+                    case "to_date":
+                        toDate = Integer.parseInt(array1[1]);
                         break;
                     case "path_to_dblp_xml":
                         datasetPath = array1[1];
@@ -253,7 +265,7 @@ class ConfigHandler{
 }
 
 class UserHandler extends DefaultHandler {
-    int MAX_DATE;
+    Integer fromDate, toDate;
     boolean insideConf = false;
     int inproceedingsCount = 0;
     int edgesPrinted = 0;
@@ -273,7 +285,8 @@ class UserHandler extends DefaultHandler {
 
     public UserHandler(ConfigHandler configObject){
 
-        MAX_DATE = configObject.getMAX_DATE();
+        fromDate = configObject.getFromDate();
+        toDate = configObject.getToDate();
 
         try{
             BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
@@ -285,7 +298,7 @@ class UserHandler extends DefaultHandler {
                 conferences.add(parts[0]);
                 confToField.put(parts[0],parts[1]);
             }
-            File d = new File(configObject.getMAX_DATE()+"/"+configObject.getCurrentDateTime());
+            File d = new File(configObject.getDirName()+"/"+configObject.getCurrentDateTime());
             d.mkdirs();
             File f = new File(d,"/edgeList.txt");
             f.createNewFile();
@@ -321,8 +334,11 @@ class UserHandler extends DefaultHandler {
             
 
             // if older than MAX_DATE and conference not included in the specified list, continue
-            if( dat > MAX_DATE && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
+            if( dat >= fromDate && dat < toDate && conferences.contains(confName) && pubType.equals("conf") && elementName.equals("inproceedings")) {
                 
+                if(inproceedingsCount%1000==0){
+                    System.out.println(dat);
+                }
                 insideConf = true;
                 
                 // create new persons array to put the authors of the new paper
