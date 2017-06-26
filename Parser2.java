@@ -150,7 +150,7 @@ public class Parser2 {
 }
 
 class ConfigHandler{
-    Integer fromDate;
+    Integer fromDate, senFromDate, senToDate;
     Integer toDate;
     String datasetPath;
     int numberOfSkillsPerWorker;
@@ -163,6 +163,12 @@ class ConfigHandler{
 
     Integer getFromDate(){
         return fromDate;
+    }
+    Integer getSenFromDate(){
+        return senFromDate;
+    }
+    Integer getSenToDate(){
+        return senToDate;
     }
 
     Integer getToDate(){
@@ -252,6 +258,12 @@ class ConfigHandler{
                     case "to_date":
                         toDate = Integer.parseInt(array1[1]);
                         break;
+                    case "seniority_from_date":
+                        senFromDate = Integer.parseInt(array1[1]);
+                        break;
+                    case "seniority_to_date":
+                        senToDate = Integer.parseInt(array1[1]);
+                        break;
                     case "path_to_dblp_xml":
                         datasetPath = array1[1];
                         break;
@@ -282,8 +294,8 @@ class ConfigHandler{
 }
 
 class UserHandler extends DefaultHandler {
-    Integer fromDate, toDate;
-    boolean insideConf = false;
+    Integer fromDate, toDate, senFromDate, senToDate;
+    boolean insideConf = false, insideConfOnlyForSeniority = false;
     int inproceedingsCount = 0;
     int edgesPrinted = 0;
     String content;
@@ -304,6 +316,8 @@ class UserHandler extends DefaultHandler {
 
         fromDate = configObject.getFromDate();
         toDate = configObject.getToDate();
+        senFromDate = configObject.getSenFromDate();
+        senToDate = configObject.getSenToDate();
 
         try{
             BufferedReader br = new BufferedReader(new FileReader(configObject.getConferencesListPath()));
@@ -362,6 +376,9 @@ class UserHandler extends DefaultHandler {
                 // create new persons array to put the authors of the new paper
                 persons = new ArrayList<Integer>(); 
             }
+            else if(dat >= senFromDate && dat < senToDate){
+                insideConfOnlyForSeniority = true;
+            }
         }
     }
 
@@ -404,6 +421,22 @@ class UserHandler extends DefaultHandler {
             edgesPrinted = edgesPrinted+newEdges;
 
             insideConf = false;
+        }
+        else if (eName.equals("author") && insideConfOnlyForSeniority){
+
+            // Find person from collection (content is the authors name in this case)
+            Person p = PersonCollection.getPersonIfExists(content);
+
+            // If the person doesnt exist in the Collection put him in
+            if (p == null){
+                p = PersonCollection.putPersonInCollection(content);
+            }
+            
+            // Add conference to his conferences list, add Field and year
+            p.addSeniorityYear(year);
+
+            // Toggle insidePerson to stop recording the content
+            insidePerson=false;
         }
     }
 

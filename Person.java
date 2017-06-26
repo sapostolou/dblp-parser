@@ -65,6 +65,18 @@ public class Person{
 		return mostCommonField;
 	}
 
+	public void addSeniorityYear(Integer y){
+		if( oldestPublicationYear == null || y < oldestPublicationYear){
+			oldestPublicationYear = y;
+		}
+
+		if( newestPublicationYear == null || y > newestPublicationYear){
+			newestPublicationYear = y;
+		}
+
+		totalConfCount = totalConfCount + 1;
+	}
+
 	public void addPublication(String confName, String fieldName, Integer y){
 
 		// PROCESS CONFERENCE NAME

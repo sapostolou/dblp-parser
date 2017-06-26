@@ -1,5 +1,7 @@
-from_date:20170601
-to_date:20170701
+from_date:20160101
+to_date:20170101
+seniority_from_date:20100101
+seniority_to_date:20170101
 path_to_dblp_xml:dblp.xml
 number_of_sklls_per_worker:3
 path_to_conferences_list:conferencesList.txt
