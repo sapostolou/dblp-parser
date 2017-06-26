@@ -61,7 +61,7 @@ public class Parser2 {
             PrintWriter stats = null;
             PrintWriter hist = null;
 
-            String path = "./"+configHandler.getDirName()+"/"+configHandler.getCurrentDateTime();
+            String path = configHandler.getPath();
 
             try{
                 idAndCommonConfs = new PrintWriter(path+"/idAndCommonConfs.txt","UTF-8");
@@ -172,6 +172,10 @@ class ConfigHandler{
         return fromDate.toString() + "-" + toDate.toString();
     }
 
+    String getPath(){
+        return "./"+fromDate.toString() + "-" + toDate.toString()+"/"+currentDateTime;
+    }
+
     String getDataPath(){
         return datasetPath;
     }
@@ -206,7 +210,7 @@ class ConfigHandler{
     void writeConfigToNewDir(){
         PrintWriter newConfig = null;
         try{
-            newConfig = new PrintWriter("./"+getDirName()+"/"+currentDateTime+"/config.txt","UTF-8");
+            newConfig = new PrintWriter(getPath()+"/config.txt","UTF-8");
         }
         catch(Exception e){
             e.printStackTrace();
