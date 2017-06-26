@@ -128,6 +128,7 @@ public class Parser2 {
             stats.println("Persons with medium seniority (upper bound : "+configHandler.medSeniorityUpperBound+"): "+countMed);
             stats.println("Persons with high seniority: "+countHigh);
             configHandler.writeConfigToNewDir();
+            configHandler.writeConfFileToNewDir();
 
             personCollection.writeSeniorityHistogram(hist);
 
@@ -156,7 +157,7 @@ class ConfigHandler{
     String pathToConferencesList;
     String currentDateTime;
     String content;
-    String allContents;
+    String allContents, confFileContents;
     Integer lowSeniorityUpperBound;
     Integer medSeniorityUpperBound;
 
@@ -217,6 +218,18 @@ class ConfigHandler{
         }
         newConfig.print(allContents);
         newConfig.close();
+    }
+
+    void writeConfFileToNewDir(){
+        PrintWriter newFile = null;
+        try{
+            newFile = new PrintWriter(getPath()+"/conferencesList.txt","UTF-8");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        newFile.print(confFileContents);
+        newFile.close();
     }
 
     public ConfigHandler(String pathToConfigFile){
@@ -297,6 +310,7 @@ class UserHandler extends DefaultHandler {
 
             String line;
             while((line = br.readLine()) != null){
+                configObject.confFileContents += line + "\n";
                 String[] parts = line.split(" ");
                 
                 conferences.add(parts[0]);
